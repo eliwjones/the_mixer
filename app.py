@@ -1,7 +1,7 @@
 import json
 import os
 import sqlite3
-from conf import DATABASE, DEPOSIT_ADDRESS_PREFIX, SCHEMA_FILENAME
+from conf import DATABASE, SCHEMA_FILENAME
 from conf import deposit_address_from_index
 from flask import g, Flask, jsonify, request
 
