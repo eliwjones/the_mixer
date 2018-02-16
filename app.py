@@ -1,7 +1,8 @@
 import json
 import os
 import sqlite3
-from conf import DATABASE, SCHEMA_FILENAME
+from conf import DATABASE, DEPOSIT_ADDRESS_PREFIX, SCHEMA_FILENAME
+from conf import deposit_address_from_index
 from flask import g, Flask, jsonify, request
 
 app = Flask(__name__)
@@ -71,7 +72,7 @@ def receive():
 
     get_db().commit()
 
-    deposit_address = "mixer-%d" % (cursor.lastrowid)
+    deposit_address = deposit_address_from_index(cursor.lastrowid)
     """
      Technically, one wants try, catch, finally and close.
 
