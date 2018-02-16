@@ -22,6 +22,13 @@ def get_db():
     return db
 
 
+@app.teardown_appcontext
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
+
+
 @app.route('/')
 def hello():
     return 'This is the Mixer.'
@@ -43,10 +50,15 @@ def receive():
       VALUES
         ('%s')
     """ % (json.dumps(addresses)))
+
     get_db().commit()
 
     deposit_address = "mixer-%d" % (cursor.lastrowid)
+    """
+     Technically, one wants try, catch, finally and close.
 
+     But here, I'm not going to worry about that.
+    """
     cursor.close()
 
     return jsonify({"deposit_address": deposit_address})
