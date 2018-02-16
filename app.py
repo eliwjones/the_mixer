@@ -1,12 +1,10 @@
 import json
 import os
 import sqlite3
+from conf import DATABASE, SCHEMA_FILENAME
 from flask import g, Flask, jsonify, request
 
 app = Flask(__name__)
-
-DATABASE = 'mixer.db'
-SCHEMA_FILENAME = 'mixer_schema.sql'
 
 
 def get_db():
