@@ -1,6 +1,6 @@
 import requests
 import sqlite3
-from conf import DATABASE, DEPOSIT_ADDRESS_PREFIX, JOBCOIN_API, JOB_SEND_TO_LOG, MIXER_ADDRESS
+from conf import DATABASE, JOBCOIN_API, JOB_SEND_TO_LOG, MIXER_ADDRESS
 from conf import deposit_address_from_index
 from datetime import datetime
 
