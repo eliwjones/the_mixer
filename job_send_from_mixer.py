@@ -64,7 +64,11 @@ for transaction in transactions:
     if from_address in deposit_to_destinations:
         if from_address not in deposit_totals:
             deposit_totals[from_address] = Decimal('0.0')
+            
         deposit_totals[from_address] += Decimal(amount)
+        
+        if from_address not in dispersal_totals:
+            dispersal_totals[from_address] = Decimal('0.0')
     """
       Feels like a slight comment here couldn't hurt.
 
