@@ -1,4 +1,3 @@
-import json
 import random
 import requests
 import sqlite3
@@ -20,20 +19,22 @@ deposit_to_destinations = {}
 destination_to_deposits = {}
 
 with con:
-    for row in con.execute("SELECT deposit_address_id, destination_addresses FROM addresses"):
+    for row in con.execute("SELECT deposit_address_id, destination_address FROM destination_addresses"):
         deposit_address = deposit_address_from_index(row[0])
-        destination_addresses = json.loads(row[1])
+        destination_address = row[1]
 
-        deposit_to_destinations[deposit_address] = destination_addresses
-        """
-          Technically, we have no guarantee that a destination_address hasn't been
-          submitted for more than one deposit_address.
+        if deposit_address not in deposit_to_destinations:
+            deposit_to_destinations[deposit_address] = []
 
-          BUT, I'm just going to assume I've used a more aggressive db schema that ensures
-          each new list of addresses posted to 'api/recieve' have not been used before.
+        deposit_to_destinations[deposit_address].append(destination_address)
         """
-        for destination_address in destination_addresses:
-            destination_to_deposits[destination_address] = deposit_address
+          Destination addresses are now guaranteed to only be associated with one deposit_address.
+
+          Previously, 2 deposit addresses could share at least one destination_address.
+          This would make it hard to infer what deposit_address the dispersal should be counted against
+          without more elaborate transaction tracking.
+        """
+        destination_to_deposits[destination_address] = deposit_address
 
 r = requests.get(JOBCOIN_API + '/addresses/' + MIXER_ADDRESS)
 mixer_balance = r.json()['balance']
@@ -63,7 +64,6 @@ for transaction in transactions:
     if from_address in deposit_to_destinations:
         if from_address not in deposit_totals:
             deposit_totals[from_address] = Decimal('0.0')
-            dispersal_totals[from_address] = Decimal('0.0')
         deposit_totals[from_address] += Decimal(amount)
     """
       Feels like a slight comment here couldn't hurt.
@@ -73,6 +73,9 @@ for transaction in transactions:
     """
     if from_address == MIXER_ADDRESS and to_address in destination_to_deposits:
         deposit_address = destination_to_deposits[to_address]
+        if deposit_address not in dispersal_totals:
+            dispersal_totals[deposit_address] = Decimal('0.0')
+
         dispersal_totals[deposit_address] += Decimal(amount)
 """
   3B. Persist current totals to database.
@@ -89,7 +92,7 @@ with con:
 
         sql += """
           UPDATE
-            addresses
+            deposit_addresses
           SET
             total_sent_to_mixer = '%s',
             total_sent_from_mixer = '%s'

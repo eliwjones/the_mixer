@@ -14,7 +14,7 @@ con = sqlite3.connect(DATABASE)
 total_sweeped = 0
 deposit_addresses = []
 with con:
-    for row in con.execute("SELECT deposit_address_id FROM addresses"):
+    for row in con.execute("SELECT deposit_address_id FROM deposit_addresses"):
         deposit_address = deposit_address_from_index(row[0])
         deposit_addresses.append(deposit_address)
 

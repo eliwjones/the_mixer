@@ -3,7 +3,7 @@ import os
 import sqlite3
 from conf import DATABASE, SCHEMA_FILENAME
 from conf import deposit_address_from_index
-from flask import g, Flask, jsonify, request
+from flask import abort, g, Flask, jsonify, request
 
 app = Flask(__name__)
 
@@ -56,23 +56,46 @@ def receive():
     pairings.
     """
     if not request.json or not 'addresses' in request.json:
-        abort(400)
+        abort(400, "Please pass json content like:  {'addresses': ['addr1']}")
 
     addresses = request.json['addresses']
     if not isinstance(addresses, list):
-        abort(400)
+        abort(400, '"addresses" must be an array.')
+    if not addresses:
+        abort(400, '"addresses" cannot be empty.')
 
-    cursor = get_db().cursor()
+    con = get_db()
+
+    cursor = con.cursor()
     cursor.execute("""
-      INSERT INTO addresses
-        (destination_addresses)
-      VALUES
-        ('%s')
-    """ % (json.dumps(addresses)))
+      INSERT INTO deposit_addresses DEFAULT VALUES
+    """)
 
-    get_db().commit()
+    con.commit()
 
-    deposit_address = deposit_address_from_index(cursor.lastrowid)
+    deposit_address_id = cursor.lastrowid
+    deposit_address = deposit_address_from_index(deposit_address_id)
+    """
+      Attempt to insert the addresses here.
+    """
+    sql = ""
+    for destination_address in addresses:
+        sql += """
+          INSERT INTO destination_addresses
+            (deposit_address_id, destination_address)
+          VALUES
+            (%d, '%s');
+        """ % (deposit_address_id, destination_address)
+
+    # sqlite3 hackery to force rollback of all inserts.
+    sql = "BEGIN; %s COMMIT;" % (sql)
+    try:
+        con.executescript(sql)
+    except Exception as e:
+        con.executescript("ROLLBACK;")
+        message = "At least one of your destination addresses is already in use."
+        message += " Exception: %s" % (e)
+        abort(400, message)
     """
      Technically, one wants try, catch, finally and close.
 
