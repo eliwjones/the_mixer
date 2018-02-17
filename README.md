@@ -8,6 +8,7 @@ Prerequisites:
 ```
 $ sudo apt-get install python-setuptools  # Linux only
 $ sudo apt-get install python-pip         # Linux only
+$ sudo easy_install pip                   # OS X only
 $ sudo pip install virtualenv
 ```
 
@@ -52,7 +53,8 @@ $ curl -i -X POST 'http://jobcoin.gemini.com/handled/api/transactions?fromAddres
 Run Jobs to move the Jobcoins around:
 =====================================
 ```
-$ python job_send_to_mixer.py 
+$ source venv/bin/activate
+(venv) $ python job_send_to_mixer.py 
 mixer-1 has '0' balance.  Continuing.
   .
   .
@@ -60,7 +62,7 @@ mixer-1 has '0' balance.  Continuing.
 mixer-12 has '0' balance.  Continuing.
 
 
-$ python job_send_from_mixer.py 
+(venv) $ python job_send_from_mixer.py 
 [2018-02-16 18:53:18] Job Send From Mixer Started.
 
 deposit_address: mixer-1, remainder: 60.0, destinations: [u'secret-addr-3', u'secret-addr-4']
