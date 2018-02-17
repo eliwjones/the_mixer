@@ -71,6 +71,6 @@ deposit_address: mixer-1, remainder: 60.0, destinations: [u'secret-addr-3', u'se
 
 NOTES:
 ======
-* I haven't broken the code out into functions as this gives me a sense of how complex/heavy the archticture feels with everything unrolled.
+* I haven't broken the code out into functions as this gives me a sense of how complex/heavy the architecture feels with everything unrolled.
 * Though, it is indeed time to break things out into functions and add tests (in the least, integration tests)
 * I feel like I overdid it with the unique destination_address, but was too annoyed to have that bug hiding in there.
