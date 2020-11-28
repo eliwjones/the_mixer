@@ -23,10 +23,10 @@ for deposit_address in deposit_addresses:
 
     balance = r.json()['balance']
     if int(balance) <= 0:
-        print "%s has '0' balance.  Continuing." % (deposit_address)
+        print("%s has '0' balance.  Continuing." % (deposit_address))
         continue
 
-    print "Transferring %s to '%s' for '%s'." % (balance, MIXER_ADDRESS, deposit_address)
+    print("Transferring %s to '%s' for '%s'." % (balance, MIXER_ADDRESS, deposit_address))
     payload = {'fromAddress': deposit_address, 'toAddress': MIXER_ADDRESS, 'amount': balance}
 
     r = requests.post(JOBCOIN_API + '/transactions', params=payload)

@@ -4,19 +4,11 @@ For mixing job coins.
 
 Quick Install
 =============
-Prerequisites:
-```
-$ sudo apt-get install python-setuptools  # Linux only
-$ sudo apt-get install python-pip         # Linux only
-$ sudo easy_install pip                   # OS X only
-$ sudo pip install virtualenv
-```
-
 Setup the Environment:
 ```
 $ git clone git@github.com:eliwjones/the_mixer.git
 $ cd the_mixer
-$ virtualenv venv --distribute
+$ python -m venv venv
 $ source venv/bin/activate
 (venv) $ pip install -r requirements.txt
 ```

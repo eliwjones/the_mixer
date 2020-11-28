@@ -9,7 +9,7 @@ from decimal import Decimal
 started = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
 with open(JOB_SEND_FROM_LOG, 'a') as f:
     log_line = "[%s] Job Send From Mixer Started.\n" % (started)
-    print log_line
+    print(log_line)
     f.write(log_line)
 
 con = sqlite3.connect(DATABASE)
@@ -44,7 +44,7 @@ if Decimal(mixer_balance) <= 0:
     completed = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
     with open(JOB_SEND_FROM_LOG, 'a') as f:
         log_line = "[%s] Job Send From Mixer Completed.  Empty Balance: %s.\n" % (completed, mixer_balance)
-        print log_line
+        print(log_line)
         f.write(log_line)
     import sys
     sys.exit()
@@ -111,6 +111,7 @@ with con:
 remainders = {}
 for deposit_address in deposit_totals:
     remainder = deposit_totals[deposit_address] - dispersal_totals[deposit_address]
+    print(f"deposit_totals: {deposit_totals}    dispersal_totals: {dispersal_totals}")
     if remainder >= Decimal(DISPERSAL_UNIT):
         remainders[deposit_address] = remainder
 """
@@ -119,14 +120,14 @@ for deposit_address in deposit_totals:
 for deposit_address in remainders:
     remainder = remainders[deposit_address]
 
-    print "deposit_address: %s, remainder: %s, destinations: %s" % (deposit_address, remainder, deposit_to_destinations[deposit_address])
+    print("deposit_address: %s, remainder: %s, destinations: %s" % (deposit_address, remainder, deposit_to_destinations[deposit_address]))
 
     destinations = deposit_to_destinations[deposit_address]
     random.shuffle(destinations)
     while destinations and remainder >= Decimal(DISPERSAL_UNIT):
         to_address = destinations.pop()
         payload = {'fromAddress': MIXER_ADDRESS, 'toAddress': to_address, 'amount': DISPERSAL_UNIT}
-        print "\tSending Payload: %s" % (payload)
+        print("\tSending Payload: %s" % (payload))
         r = requests.post(JOBCOIN_API + '/transactions', params=payload)
         if r.status_code == 200:
             remainder -= Decimal(DISPERSAL_UNIT)
@@ -135,5 +136,5 @@ for deposit_address in remainders:
 completed = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
 with open(JOB_SEND_FROM_LOG, 'a') as f:
     log_line = "[%s] Job Send From Mixer Completed.  Total Jobcoins Dispersed: %s.\n" % (completed, str(total_dispersed))
-    print log_line
+    print(log_line)
     f.write(log_line)

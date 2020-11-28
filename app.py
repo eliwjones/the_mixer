@@ -14,7 +14,7 @@ def get_db():
         db_is_new = not os.path.exists(DATABASE)
         db = g._database = sqlite3.connect(DATABASE)
         if db_is_new:
-            print 'Creating mixer_schema'
+            print('Creating mixer_schema')
             with open(SCHEMA_FILENAME, 'rt') as f:
                 schema = f.read()
             db.executescript(schema)
